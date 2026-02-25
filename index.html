@@ -5,13 +5,17 @@
 <title>den · таймер + секундомер + статистика</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Font Awesome для иконок -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-height:100vh;display:flex;justify-content:center;align-items:center;
+min-height:100vh;display:flex;justify-content:center;align-items:center;
 font-family:'Inter',sans-serif;color:white;
 background:#1a1a1a;
+padding:10px;
 }
+/* Фиксированная навигация */
 .top-nav{
 position:fixed;
 top:20px;
@@ -34,21 +38,94 @@ background:#a3e635;
 color:#1a1a1a;
 border-color:#a3e635;
 }
-.container{
-width:1100px;
-padding-top:80px;
+/* Иконка звука */
+.sound-toggle {
+    background:#2d2d2d;
+    border:1px solid #404040;
+    padding:12px 20px;
+    border-radius:40px;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
 }
+.sound-toggle i { font-size:18px; }
+
+/* Виджет целей (левый верхний угол) */
+.goals-widget {
+    position:fixed;
+    top:80px;
+    left:20px;
+    background:#2d2d2d;
+    border:1px solid #404040;
+    border-radius:20px;
+    padding:15px;
+    width:240px;
+    color:white;
+    z-index:900;
+    font-size:13px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+}
+.goals-widget h4 {
+    margin-bottom:12px;
+    color:#a3e635;
+    font-size:14px;
+    font-weight:600;
+    text-align:center;
+}
+.goal-item {
+    margin-bottom:12px;
+}
+.goal-item .goal-name {
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:3px;
+}
+.goal-item .goal-bar-bg {
+    height:4px;
+    background:#404040;
+    border-radius:2px;
+    overflow:hidden;
+}
+.goal-item .goal-bar-fill {
+    height:100%;
+    background:#a3e635;
+    width:0%;
+    transition:width 0.3s;
+}
+.no-goals {
+    color:#b0b0b0;
+    text-align:center;
+    padding:5px;
+}
+
+/* Контейнер — теперь более широкий */
+.container{
+width:100%;
+max-width:1400px; /* увеличено с 1100px */
+padding-top:90px; /* немного увеличил отступ, чтобы не налезать на виджет */
+margin:0 auto;
+}
+/* Карточка занимает почти всю ширину */
 .card{
 background:transparent;
 border:none;
-padding:40px;border-radius:48px;
-display:flex;flex-direction:column;
-align-items:center;gap:30px;
+padding:40px 60px; /* увеличены боковые отступы */
+border-radius:48px;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:30px;
+width:100%;
 }
+/* Заголовки */
 h2, h3{width:100%;font-weight:500;color:#e0e0e0;}
 h2{font-size:24px;margin-bottom:5px;text-align:center;}
 h3{font-size:18px;margin-bottom:10px;color:#b0b0b0;text-align:center;}
-select,input,button{padding:12px 20px;border-radius:30px;border:none;outline:none;font-size:16px;}
+/* Общие стили для полей и кнопок */
+select,input,button{padding:12px 24px;border-radius:40px;border:none;outline:none;font-size:16px;}
 .primary{
 background:#a3e635;
 color:#1a1a1a;
@@ -65,16 +142,21 @@ font-weight:600;
 font-size:32px;font-weight:600;color:#a3e635;text-align:center;
 }
 #countdown, #stopwatchDisplay{
-font-size:80px;text-align:center;font-weight:700;letter-spacing:5px;color:#a3e635;
+font-size:90px; /* чуть крупнее */
+text-align:center;
+font-weight:700;
+letter-spacing:5px;
+color:#a3e635;
 }
-.progress{height:8px;background:#404040;border-radius:20px;overflow:hidden;width:100%;}
+.progress{height:10px;background:#404040;border-radius:20px;overflow:hidden;width:100%;}
 .progress-bar{height:100%;width:0%;background:#a3e635;transition:width 1s linear;}
-.activity-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.activity-row{display:flex;gap:15px;flex-wrap:wrap;justify-content:center;}
 
-/* Кнопки активностей */
+/* Кнопки активностей (чуть крупнее) */
 .activity-btn{
-background:#404040;color:white;padding:10px 20px;border-radius:30px;
+background:#404040;color:white;padding:12px 24px;border-radius:40px;
 cursor:pointer;transition:0.2s;border:2px solid transparent;
+font-size:16px;
 }
 .activity-btn:hover{background:#525252;}
 .activity-btn.active{
@@ -82,50 +164,122 @@ border-color:#a3e635;
 background:#2d2d2d;
 }
 
-/* Барабаны */
+/* Барабаны — крупнее */
 .picker-container{
-display:flex;gap:40px;justify-content:center;align-items:center;
+display:flex;
+gap:60px; /* увеличил промежуток */
+justify-content:center;
+align-items:center;
 }
 .picker{
-display:flex;flex-direction:column;align-items:center;gap:8px;
+display:flex;flex-direction:column;align-items:center;gap:10px;
 }
-.picker label{font-size:14px;color:#b0b0b0;text-transform:uppercase;letter-spacing:1px;}
+.picker label{font-size:16px;color:#b0b0b0;text-transform:uppercase;letter-spacing:1px;}
 .picker-value{
-background:#404040;border-radius:30px;padding:15px 30px;
-font-size:40px;font-weight:700;color:#a3e635;
+background:#404040;border-radius:40px;padding:20px 40px; /* увеличены */
+font-size:48px;font-weight:700;color:#a3e635;
 cursor:ns-resize;user-select:none;transition:0.1s;
 border:2px solid transparent;
 }
 .picker-value:hover{border-color:#a3e635;}
 
-/* Добавление категории — теперь по центру */
+/* Добавление категории */
 .add-category{
 display:flex;
-gap:10px;
+gap:15px;
 width:100%;
-justify-content:center; /* центрируем содержимое */
+justify-content:center;
 flex-wrap:wrap;
 }
-.add-category input{flex:1 1 200px;background:#404040;color:white;}
+.add-category input{
+width:250px; /* чуть шире */
+background:#404040;
+color:white;
+padding:12px 20px;
+}
 .add-category input::placeholder{color:#b0b0b0;}
 
 /* Статистика */
 .stats-grid{
-display:flex;flex-direction:column;gap:25px;width:100%;
+display:flex;flex-direction:column;gap:30px;width:100%;
 }
 .stats-card{
-background:#404040;border-radius:30px;padding:25px;
+background:#404040;border-radius:30px;padding:30px;
 }
-.stats-card h3{margin-bottom:15px;color:#e0e0e0;text-align:left;}
+.stats-card h3{margin-bottom:15px;color:#e0e0e0;text-align:left; font-size:20px;}
 .stats-table{width:100%;border-collapse:collapse;}
-.stats-table td{padding:8px 0;border-bottom:1px solid #525252;}
+.stats-table td{padding:12px 0;border-bottom:1px solid #525252;}
 .stats-table tr:last-child td{border-bottom:none;}
 .chart-container{
-width:100%;height:250px;margin-top:10px;
+width:100%;height:300px;margin-top:15px;
+}
+
+/* Скелетоны */
+.skeleton {
+    background: linear-gradient(90deg, #404040 25%, #525252 50%, #404040 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 20px;
+}
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-table td { height: 24px; background:#404040; border-radius:8px; }
+.skeleton-chart { width:100%; height:300px; background:#404040; border-radius:20px; }
+
+/* Фильтры статистики */
+.stats-filters {
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-bottom:25px;
+}
+.stats-filters select,
+.stats-filters input[type="date"],
+.stats-filters button {
+    background:#404040;
+    color:white;
+    padding:12px 20px;
+    border-radius:40px;
+    border:1px solid #525252;
+    font-size:15px;
+    cursor:pointer;
+}
+.stats-filters select:hover,
+.stats-filters input[type="date"]:hover,
+.stats-filters button:hover {
+    background:#525252;
+}
+.stats-filters select option {
+    background:#2d2d2d;
+    color:white;
+}
+.date-range {
+    display:flex;
+    gap:5px;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+/* Адаптация для очень широких экранов */
+@media (min-width: 1600px) {
+    .container { max-width: 1600px; }
+    .card { padding: 50px 80px; }
+    #countdown, #stopwatchDisplay { font-size: 110px; }
+    .picker-value { font-size: 56px; padding: 25px 50px; }
+    .activity-btn { padding: 14px 30px; font-size: 18px; }
 }
 </style>
 </head>
 <body>
+
+<!-- Виджет целей -->
+<div class="goals-widget" id="goalsWidget">
+    <h4>Daily Goals</h4>
+    <div id="goalsList"></div>
+</div>
 
 <div class="container">
 
@@ -133,19 +287,22 @@ width:100%;height:250px;margin-top:10px;
 <button id="timerNavBtn" onclick="showTimer()">Timer</button>
 <button id="stopwatchNavBtn" onclick="showStopwatch()">Stopwatch</button>
 <button id="statsNavBtn" onclick="showStats()">Statistics</button>
+<!-- Переключатель звука -->
+<div class="sound-toggle" onclick="toggleSound()" id="soundToggle">
+    <i class="fas fa-volume-up"></i>
+</div>
 </div>
 
-<!-- TIMER (с центрированными элементами) -->
+<!-- TIMER -->
 <div id="timerScreen">
 <div class="card">
 
     <div id="activitySelection" style="width:100%;">
         <h3>Activity</h3>
         <div style="display: flex; flex-direction: column; gap: 15px;">
-            <!-- Кнопки активностей теперь по центру -->
             <div id="activityButtons" class="activity-row" style="justify-content: center;"></div>
             <div class="add-category">
-                <input type="text" id="newCategoryInput" placeholder="New category name">
+                <input type="text" id="newCategoryInput" placeholder="New category">
                 <button class="secondary" onclick="addCategory()">Add</button>
                 <button class="danger" onclick="deleteCategory()">Delete</button>
             </div>
@@ -194,7 +351,7 @@ width:100%;height:250px;margin-top:10px;
 </div>
 </div>
 
-<!-- STOPWATCH (без изменений) -->
+<!-- STOPWATCH -->
 <div id="stopwatchScreen" class="hidden">
 <div class="card">
 
@@ -220,21 +377,48 @@ width:100%;height:250px;margin-top:10px;
 </div>
 </div>
 
-<!-- STATISTICS (без изменений) -->
+<!-- STATISTICS -->
 <div id="statsScreen" class="hidden">
 <div class="card">
     <h2>Statistics</h2>
-    <div class="stats-grid">
+
+    <!-- Фильтры -->
+    <div class="stats-filters">
+        <select id="filterActivity">
+            <option value="all">All activities</option>
+        </select>
+        <select id="filterPeriod">
+            <option value="7">Last 7 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="custom">Custom range</option>
+        </select>
+        <div class="date-range" id="customDateRange" style="display:none;">
+            <input type="date" id="startDate">
+            <span>-</span>
+            <input type="date" id="endDate">
+        </div>
+        <button class="secondary" onclick="applyStatsFilter()">Apply</button>
+    </div>
+
+    <!-- Скелетоны -->
+    <div id="statsSkeleton" class="stats-grid">
+        <div class="stats-card skeleton" style="height:200px;"></div>
+        <div class="stats-card skeleton" style="height:200px;"></div>
+        <div class="stats-card skeleton-chart" style="height:300px;"></div>
+    </div>
+
+    <!-- Реальные данные -->
+    <div id="statsContent" class="stats-grid hidden">
         <div class="stats-card" id="todayStats">
             <h3>Today</h3>
             <table class="stats-table" id="todayTable"></table>
         </div>
         <div class="stats-card" id="weekActivityStats">
-            <h3>Last 7 days (by activity)</h3>
-            <table class="stats-table" id="weekActivityTable"></table>
+            <h3>Selected period (by activity)</h3>
+            <table class="stats-table" id="periodTable"></table>
         </div>
         <div class="stats-card" id="weekChartStats">
-            <h3>Last 7 days (activity trends)</h3>
+            <h3>Activity trends</h3>
             <div class="chart-container">
                 <canvas id="activityChart"></canvas>
             </div>
@@ -246,9 +430,10 @@ width:100%;height:250px;margin-top:10px;
 </div>
 
 <script>
-// ---------- ПОЛНОСТЬЮ СОХРАНЁННЫЙ СКРИПТ ----------
+// ---------- ГЛОБАЛЬНЫЕ ДАННЫЕ ----------
 let activities = JSON.parse(localStorage.getItem("activities")) || ["General"];
 let sessions = JSON.parse(localStorage.getItem("sessions")) || [];
+let goals = JSON.parse(localStorage.getItem("goals")) || {};
 
 let targetDate, startTime, interval, totalDuration;
 let selectedActivity = "General";
@@ -273,14 +458,37 @@ const stopwatchStartControls = document.getElementById("stopwatchStartControls")
 const stopwatchActiveControls = document.getElementById("stopwatchActiveControls");
 const stopwatchPauseBtn = document.getElementById("stopwatchPauseBtn");
 
+const filterActivity = document.getElementById("filterActivity");
+const filterPeriod = document.getElementById("filterPeriod");
+const customDateRange = document.getElementById("customDateRange");
+const startDate = document.getElementById("startDate");
+const endDate = document.getElementById("endDate");
+const statsSkeleton = document.getElementById("statsSkeleton");
+const statsContent = document.getElementById("statsContent");
+
 let hours = 0, minutes = 0;
 let chartInstance = null;
+
+let soundEnabled = true;
+const soundToggle = document.getElementById("soundToggle");
+const audio = new Audio();
+audio.src = "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3";
+audio.preload = "auto";
+
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    soundToggle.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+}
+function playSound() {
+    if (soundEnabled) audio.play().catch(e => console.log("Audio play failed", e));
+}
 
 function setActiveNav(activeId) {
     [timerNavBtn, stopwatchNavBtn, statsNavBtn].forEach(btn => btn.classList.remove("active"));
     document.getElementById(activeId).classList.add("active");
 }
 
+// ---------- СОХРАНЕНИЕ ТАЙМЕРА ----------
 function saveTimerState() {
     if (targetDate) {
         const state = {
@@ -326,7 +534,9 @@ function restoreTimerState() {
 
 function saveActivities() { localStorage.setItem("activities", JSON.stringify(activities)); }
 function saveSessions() { localStorage.setItem("sessions", JSON.stringify(sessions)); }
+function saveGoals() { localStorage.setItem("goals", JSON.stringify(goals)); }
 
+// ---------- ЗАГРУЗКА АКТИВНОСТЕЙ ----------
 function loadActivities() {
     activityButtonsDiv.innerHTML = "";
     activities.forEach(act => {
@@ -355,6 +565,54 @@ function loadActivities() {
         };
         stopwatchActivityButtonsDiv.appendChild(btn);
     });
+
+    filterActivity.innerHTML = '<option value="all">All activities</option>';
+    activities.forEach(act => {
+        let opt = document.createElement("option");
+        opt.value = act;
+        opt.textContent = act;
+        filterActivity.appendChild(opt);
+    });
+
+    renderGoalsWidget(); // обновляем виджет целей
+}
+
+// ---------- ВИДЖЕТ ЦЕЛЕЙ ----------
+function renderGoalsWidget() {
+    const list = document.getElementById("goalsList");
+    if (!list) return;
+    const today = new Date().toISOString().split('T')[0];
+    let html = '';
+    activities.forEach(act => {
+        const goal = goals[act] || 0;
+        if (goal > 0) {
+            const todayTotal = sessions.filter(s => s.activity === act && s.date === today).reduce((acc, s) => acc + s.duration, 0) / 60000;
+            const percent = Math.min((todayTotal / goal) * 100, 100);
+            html += `
+                <div class="goal-item">
+                    <div class="goal-name">
+                        <span>${act}</span>
+                        <span>${Math.round(todayTotal)}/${goal} min</span>
+                    </div>
+                    <div class="goal-bar-bg"><div class="goal-bar-fill" style="width: ${percent}%;"></div></div>
+                </div>
+            `;
+        }
+    });
+    if (html === '') {
+        html = '<div class="no-goals">No goals set</div>';
+    }
+    list.innerHTML = html;
+}
+
+function setGoal(activity) {
+    const newGoal = prompt(`Set daily goal (minutes) for ${activity}:`, goals[activity] || 0);
+    if (newGoal !== null && !isNaN(newGoal) && newGoal >= 0) {
+        goals[activity] = parseInt(newGoal);
+        saveGoals();
+        renderGoalsWidget();
+        renderStats(); // обновим статистику
+    }
 }
 
 function addCategory() {
@@ -372,12 +630,15 @@ function addCategory() {
 function deleteCategory() {
     if (selectedActivity === "General") { alert("General cannot be deleted."); return; }
     activities = activities.filter(a => a !== selectedActivity);
+    delete goals[selectedActivity];
     saveActivities();
+    saveGoals();
     if (!activities.includes(selectedActivity)) selectedActivity = "General";
     if (!activities.includes(selectedStopwatchActivity)) selectedStopwatchActivity = "General";
     loadActivities();
 }
 
+// ---------- ТАЙМЕР ----------
 function setupWheel(element, min, max, callback) {
     element.addEventListener('wheel', (e) => {
         e.preventDefault();
@@ -389,20 +650,17 @@ function setupWheel(element, min, max, callback) {
         callback(newVal);
     });
 }
-
 setupWheel(hoursDiv, 0, 23, (val) => hours = val);
 setupWheel(minutesDiv, 0, 59, (val) => minutes = val);
 
 function startQuick(minutesTotal) {
     startTimerWithMinutes(minutesTotal);
 }
-
 function startCustom() {
     let totalMinutes = hours * 60 + minutes;
     if (totalMinutes <= 0) { alert("Select time > 0"); return; }
     startTimerWithMinutes(totalMinutes);
 }
-
 function startTimerWithMinutes(minutes) {
     clearInterval(interval);
     const now = new Date();
@@ -412,16 +670,13 @@ function startTimerWithMinutes(minutes) {
     launch();
     saveTimerState();
 }
-
 function launch(isRestore = false) {
     document.getElementById("activitySelection").classList.add("hidden");
     document.getElementById("quickButtons").classList.add("hidden");
     document.getElementById("customPicker").classList.add("hidden");
-    
     const timerArea = document.getElementById("timerActiveArea");
     timerArea.classList.remove("hidden");
     document.getElementById("currentActivity").textContent = selectedActivity;
-    
     if (!isRestore) {
         update();
         interval = setInterval(update, 1000);
@@ -430,24 +685,18 @@ function launch(isRestore = false) {
         interval = setInterval(update, 1000);
     }
 }
-
 function update() {
     const now = new Date();
     const diff = targetDate - now;
-    if (diff <= 0) { 
-        completeSession(totalDuration); 
-        return; 
-    }
+    if (diff <= 0) { completeSession(totalDuration); return; }
     const percent = ((totalDuration - diff) / totalDuration) * 100;
     document.getElementById("progressBar").style.width = percent + "%";
     const minutes = Math.floor(diff / 60000);
     const seconds = Math.floor((diff % 60000) / 1000);
     document.getElementById("countdown").textContent =
         String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
-    
     saveTimerState();
 }
-
 function completeSession(duration) {
     clearInterval(interval);
     const activity = selectedActivity;
@@ -460,31 +709,30 @@ function completeSession(duration) {
     saveSessions();
     clearTimerState();
     resetUI();
+    playSound();
+    renderGoalsWidget(); // обновляем виджет
     renderStats();
 }
-
 function finishEarly() {
     clearInterval(interval);
     const duration = new Date() - startTime;
     completeSession(duration);
 }
-
 function cancelTimer() {
     clearInterval(interval);
     clearTimerState();
     resetUI();
 }
-
 function resetUI() {
     document.getElementById("activitySelection").classList.remove("hidden");
     document.getElementById("quickButtons").classList.remove("hidden");
     document.getElementById("customPicker").classList.remove("hidden");
-    
     document.getElementById("timerActiveArea").classList.add("hidden");
     document.getElementById("progressBar").style.width = "0%";
     document.getElementById("countdown").textContent = "00:00";
 }
 
+// ---------- СЕКУНДОМЕР ----------
 function formatStopwatchTime(ms) {
     let totalSeconds = Math.floor(ms / 1000);
     let hours = Math.floor(totalSeconds / 3600);
@@ -492,7 +740,6 @@ function formatStopwatchTime(ms) {
     let seconds = totalSeconds % 60;
     return String(hours).padStart(2,'0') + ':' + String(minutes).padStart(2,'0') + ':' + String(seconds).padStart(2,'0');
 }
-
 function updateStopwatchDisplay() {
     if (!stopwatchRunning && stopwatchPausedTime === 0) {
         document.getElementById("stopwatchDisplay").textContent = "00:00:00";
@@ -500,12 +747,9 @@ function updateStopwatchDisplay() {
     }
     let now = Date.now();
     let elapsed = stopwatchPausedTime;
-    if (stopwatchRunning) {
-        elapsed += (now - stopwatchStartTime);
-    }
+    if (stopwatchRunning) elapsed += (now - stopwatchStartTime);
     document.getElementById("stopwatchDisplay").textContent = formatStopwatchTime(elapsed);
 }
-
 function updateStopwatchUI() {
     const hasTime = stopwatchPausedTime > 0 || stopwatchRunning;
     if (hasTime) {
@@ -514,11 +758,7 @@ function updateStopwatchUI() {
         stopwatchCurrentActivity.textContent = selectedStopwatchActivity;
         stopwatchStartControls.classList.add("hidden");
         stopwatchActiveControls.classList.remove("hidden");
-        if (stopwatchRunning) {
-            stopwatchPauseBtn.textContent = "Pause";
-        } else {
-            stopwatchPauseBtn.textContent = "Continue";
-        }
+        stopwatchPauseBtn.textContent = stopwatchRunning ? "Pause" : "Continue";
     } else {
         stopwatchActivitySection.classList.remove("hidden");
         stopwatchCurrentActivity.classList.add("hidden");
@@ -526,15 +766,10 @@ function updateStopwatchUI() {
         stopwatchActiveControls.classList.add("hidden");
     }
 }
-
 function startStopwatch() {
     if (stopwatchRunning) return;
-    if (stopwatchPausedTime > 0) {
-        stopwatchStartTime = Date.now();
-    } else {
-        stopwatchStartTime = Date.now();
-        stopwatchPausedTime = 0;
-    }
+    if (stopwatchPausedTime > 0) stopwatchStartTime = Date.now();
+    else { stopwatchStartTime = Date.now(); stopwatchPausedTime = 0; }
     stopwatchRunning = true;
     if (stopwatchInterval) clearInterval(stopwatchInterval);
     stopwatchInterval = setInterval(() => {
@@ -543,46 +778,27 @@ function startStopwatch() {
     }, 100);
     updateStopwatchUI();
 }
-
 function pauseStopwatch() {
     if (!stopwatchRunning) return;
     let now = Date.now();
     stopwatchPausedTime += (now - stopwatchStartTime);
     stopwatchRunning = false;
-    clearInterval(stopwatchInterval);
-    stopwatchInterval = null;
-    updateStopwatchDisplay();
-    updateStopwatchUI();
+    clearInterval(stopwatchInterval); stopwatchInterval = null;
+    updateStopwatchDisplay(); updateStopwatchUI();
 }
-
 function togglePause() {
-    if (stopwatchRunning) {
-        pauseStopwatch();
-    } else {
-        if (stopwatchPausedTime > 0) {
-            startStopwatch();
-        }
-    }
+    if (stopwatchRunning) pauseStopwatch();
+    else if (stopwatchPausedTime > 0) startStopwatch();
 }
-
 function resetStopwatch() {
-    pauseStopwatch();
-    stopwatchPausedTime = 0;
-    stopwatchRunning = false;
-    updateStopwatchDisplay();
-    updateStopwatchUI();
+    pauseStopwatch(); stopwatchPausedTime = 0; stopwatchRunning = false;
+    updateStopwatchDisplay(); updateStopwatchUI();
 }
-
 function saveStopwatchSession() {
-    if (stopwatchPausedTime === 0 && !stopwatchRunning) {
-        alert("No time measured");
-        return;
-    }
+    if (stopwatchPausedTime === 0 && !stopwatchRunning) { alert("No time measured"); return; }
     let finalElapsed = stopwatchPausedTime;
     if (stopwatchRunning) {
-        let now = Date.now();
-        finalElapsed += (now - stopwatchStartTime);
-        pauseStopwatch();
+        let now = Date.now(); finalElapsed += (now - stopwatchStartTime); pauseStopwatch();
     }
     sessions.push({
         activity: selectedStopwatchActivity,
@@ -592,91 +808,125 @@ function saveStopwatchSession() {
     });
     saveSessions();
     resetStopwatch();
+    playSound();
+    renderGoalsWidget();
     renderStats();
     alert(`Session saved: ${Math.round(finalElapsed/60000)} min ${Math.round((finalElapsed%60000)/1000)} sec`);
 }
 
+// ---------- НАВИГАЦИЯ ----------
 function showTimer() {
     setActiveNav("timerNavBtn");
     document.getElementById("timerScreen").classList.remove("hidden");
     document.getElementById("stopwatchScreen").classList.add("hidden");
     document.getElementById("statsScreen").classList.add("hidden");
 }
-
 function showStopwatch() {
     setActiveNav("stopwatchNavBtn");
     document.getElementById("timerScreen").classList.add("hidden");
     document.getElementById("stopwatchScreen").classList.remove("hidden");
     document.getElementById("statsScreen").classList.add("hidden");
-    updateStopwatchDisplay();
-    updateStopwatchUI();
+    updateStopwatchDisplay(); updateStopwatchUI();
 }
-
 function showStats() {
     setActiveNav("statsNavBtn");
     document.getElementById("timerScreen").classList.add("hidden");
     document.getElementById("stopwatchScreen").classList.add("hidden");
     document.getElementById("statsScreen").classList.remove("hidden");
-    renderStats();
+    statsSkeleton.classList.remove("hidden"); statsContent.classList.add("hidden");
+    setTimeout(() => {
+        renderStats();
+        statsSkeleton.classList.add("hidden");
+        statsContent.classList.remove("hidden");
+    }, 200);
 }
 
+// ---------- ФИЛЬТРЫ ----------
+let currentFilter = { activity: 'all', period: '7', start: null, end: null };
+filterPeriod.addEventListener('change', () => {
+    customDateRange.style.display = filterPeriod.value === 'custom' ? 'flex' : 'none';
+});
+function applyStatsFilter() {
+    currentFilter.activity = filterActivity.value;
+    currentFilter.period = filterPeriod.value;
+    if (currentFilter.period === 'custom') {
+        currentFilter.start = startDate.value;
+        currentFilter.end = endDate.value;
+        if (!currentFilter.start || !currentFilter.end) { alert("Select both dates"); return; }
+    }
+    showStats(); // перезагрузит со скелетоном
+}
+
+// ---------- СТАТИСТИКА ----------
 function renderStats() {
     const today = new Date().toISOString().split('T')[0];
-    const oneWeekAgo = Date.now() - 7*24*60*60*1000;
+    let filteredSessions = sessions;
+    if (currentFilter.activity !== 'all') filteredSessions = filteredSessions.filter(s => s.activity === currentFilter.activity);
 
+    let start, end;
+    if (currentFilter.period === '7') { end = Date.now(); start = end - 7*24*60*60*1000; }
+    else if (currentFilter.period === '30') { end = Date.now(); start = end - 30*24*60*60*1000; }
+    else if (currentFilter.period === 'custom') {
+        start = new Date(currentFilter.start).getTime();
+        end = new Date(currentFilter.end).getTime() + 24*60*60*1000 - 1;
+    }
+    if (start && end) filteredSessions = filteredSessions.filter(s => s.timestamp >= start && s.timestamp <= end);
+
+    // Today
     const todaySessions = sessions.filter(s => s.date === today);
     const todayMap = new Map();
     todaySessions.forEach(s => {
-        const act = s.activity;
         const mins = s.duration / 60000;
-        todayMap.set(act, (todayMap.get(act) || 0) + mins);
+        todayMap.set(s.activity, (todayMap.get(s.activity) || 0) + mins);
     });
     let todayHtml = '';
     for (let [act, mins] of todayMap) {
-        todayHtml += `<tr><td>${act}</td><td>${Math.round(mins)} min</td></tr>`;
+        todayHtml += `<tr><td>${act} ${goals[act] ? '🎯' + goals[act] : ''}</td><td>${Math.round(mins)} min</td></tr>`;
     }
     if (todayHtml === '') todayHtml = '<tr><td colspan="2">No activity today</td></tr>';
     document.getElementById('todayTable').innerHTML = todayHtml;
 
-    const weekSessions = sessions.filter(s => s.timestamp >= oneWeekAgo);
-    const weekMap = new Map();
-    weekSessions.forEach(s => {
-        const act = s.activity;
+    // Period by activity
+    const periodMap = new Map();
+    filteredSessions.forEach(s => {
         const mins = s.duration / 60000;
-        weekMap.set(act, (weekMap.get(act) || 0) + mins);
+        periodMap.set(s.activity, (periodMap.get(s.activity) || 0) + mins);
     });
-    let weekHtml = '';
-    for (let [act, mins] of weekMap) {
-        weekHtml += `<tr><td>${act}</td><td>${Math.round(mins)} min</td></tr>`;
+    let periodHtml = '';
+    for (let [act, mins] of periodMap) {
+        periodHtml += `<tr><td>${act} ${goals[act] ? '🎯' + goals[act] : ''} <button class="secondary" style="padding:2px 5px; font-size:10px;" onclick="setGoal('${act}')">set goal</button></td><td>${Math.round(mins)} min</td></tr>`;
     }
-    if (weekHtml === '') weekHtml = '<tr><td colspan="2">No activity last 7 days</td></tr>';
-    document.getElementById('weekActivityTable').innerHTML = weekHtml;
+    if (periodHtml === '') periodHtml = '<tr><td colspan="2">No activity in selected period</td></tr>';
+    document.getElementById('periodTable').innerHTML = periodHtml;
 
+    // Chart
     const days = [];
-    for (let i = 6; i >= 0; i--) {
-        const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
-        days.push(d.toISOString().split('T')[0]);
+    if (currentFilter.period === '7' || currentFilter.period === '30') {
+        let numDays = currentFilter.period === '7' ? 7 : 30;
+        for (let i = numDays-1; i >= 0; i--) {
+            days.push(new Date(Date.now() - i*24*60*60*1000).toISOString().split('T')[0]);
+        }
+    } else if (currentFilter.period === 'custom' && start && end) {
+        let cur = new Date(start);
+        let last = new Date(end);
+        while (cur <= last) {
+            days.push(cur.toISOString().split('T')[0]);
+            cur.setDate(cur.getDate() + 1);
+        }
     }
-
-    const uniqueActivities = [...new Set(weekSessions.map(s => s.activity))];
+    const uniqueActivities = [...new Set(filteredSessions.map(s => s.activity))];
     if (uniqueActivities.length === 0) {
         if (chartInstance) chartInstance.destroy();
         const ctx = document.getElementById('activityChart').getContext('2d');
-        chartInstance = new Chart(ctx, {
-            type: 'line',
-            data: { labels: days.map(d => d.slice(5)), datasets: [] },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
+        chartInstance = new Chart(ctx, { type: 'line', data: { labels: days.map(d => d.slice(5)), datasets: [] }, options: { responsive: true, maintainAspectRatio: false } });
         return;
     }
-
     const datasets = [];
     const colors = ['#a3e635', '#60a5fa', '#f87171', '#fbbf24', '#c084fc', '#34d399', '#f472b6'];
     uniqueActivities.forEach((act, idx) => {
         const data = days.map(date => {
-            const daySessions = sessions.filter(s => s.date === date && s.activity === act);
-            const totalMin = daySessions.reduce((acc, s) => acc + s.duration, 0) / 60000;
-            return Math.round(totalMin * 10) / 10;
+            const daySessions = filteredSessions.filter(s => s.date === date && s.activity === act);
+            return Math.round(daySessions.reduce((acc, s) => acc + s.duration, 0) / 60000 * 10) / 10;
         });
         datasets.push({
             label: act,
@@ -688,52 +938,26 @@ function renderStats() {
             borderWidth: 3
         });
     });
-
     if (chartInstance) chartInstance.destroy();
-
     const ctx = document.getElementById('activityChart').getContext('2d');
     chartInstance = new Chart(ctx, {
         type: 'line',
-        data: {
-            labels: days.map(d => d.slice(5)),
-            datasets: datasets
-        },
+        data: { labels: days.map(d => d.slice(5)), datasets: datasets },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            responsive: true, maintainAspectRatio: false,
             scales: {
-                y: {
-                    beginAtZero: true,
-                    title: { display: true, text: 'minutes', color: '#b0b0b0' },
-                    ticks: { color: '#b0b0b0' },
-                    grid: { color: '#404040' }
-                },
-                x: {
-                    ticks: { color: '#b0b0b0' },
-                    grid: { color: '#404040' }
-                }
+                y: { beginAtZero: true, title: { display: true, text: 'minutes', color: '#b0b0b0' }, ticks: { color: '#b0b0b0' }, grid: { color: '#404040' } },
+                x: { ticks: { color: '#b0b0b0' }, grid: { color: '#404040' } }
             },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#e0e0e0',
-                        usePointStyle: true,
-                        pointStyle: 'circle',
-                        boxWidth: 4,
-                        boxHeight: 4,
-                        font: { size: 10 }
-                    }
-                }
-            }
+            plugins: { legend: { labels: { color: '#e0e0e0', usePointStyle: true, pointStyle: 'circle', boxWidth: 4, boxHeight: 4, font: { size: 10 } } } }
         }
     });
 }
 
+// ---------- ИНИЦИАЛИЗАЦИЯ ----------
 loadActivities();
 renderStats();
-if (!restoreTimerState()) {
-    resetUI();
-}
+if (!restoreTimerState()) resetUI();
 setActiveNav("timerNavBtn");
 </script>
 </body>
