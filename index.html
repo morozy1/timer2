@@ -8,6 +8,7 @@
 <!-- Font Awesome для иконок -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
+/* --- стили без изменений (как в финальной версии) --- */
 *{margin:0;padding:0;box-sizing:border-box}
 body{
 min-height:100vh;display:flex;justify-content:center;align-items:center;
@@ -15,7 +16,6 @@ font-family:'Inter',sans-serif;color:white;
 background:#1a1a1a;
 padding:10px;
 }
-/* Фиксированная навигация */
 .top-nav{
 position:fixed;
 top:20px;
@@ -38,7 +38,6 @@ background:#a3e635;
 color:#1a1a1a;
 border-color:#a3e635;
 }
-/* Иконка звука */
 .sound-toggle {
     background:#2d2d2d;
     border:1px solid #404040;
@@ -53,7 +52,6 @@ border-color:#a3e635;
 }
 .sound-toggle i { font-size:18px; }
 
-/* Виджет целей (левый верхний угол) */
 .goals-widget {
     position:fixed;
     top:80px;
@@ -101,18 +99,16 @@ border-color:#a3e635;
     padding:5px;
 }
 
-/* Контейнер — теперь более широкий */
 .container{
 width:100%;
-max-width:1400px; /* увеличено с 1100px */
-padding-top:90px; /* немного увеличил отступ, чтобы не налезать на виджет */
+max-width:1400px;
+padding-top:90px;
 margin:0 auto;
 }
-/* Карточка занимает почти всю ширину */
 .card{
 background:transparent;
 border:none;
-padding:40px 60px; /* увеличены боковые отступы */
+padding:40px 60px;
 border-radius:48px;
 display:flex;
 flex-direction:column;
@@ -120,11 +116,9 @@ align-items:center;
 gap:30px;
 width:100%;
 }
-/* Заголовки */
 h2, h3{width:100%;font-weight:500;color:#e0e0e0;}
 h2{font-size:24px;margin-bottom:5px;text-align:center;}
 h3{font-size:18px;margin-bottom:10px;color:#b0b0b0;text-align:center;}
-/* Общие стили для полей и кнопок */
 select,input,button{padding:12px 24px;border-radius:40px;border:none;outline:none;font-size:16px;}
 .primary{
 background:#a3e635;
@@ -137,22 +131,16 @@ font-weight:600;
 .secondary:hover{background:#525252;}
 .hidden{display:none !important}
 
-/* Таймер и секундомер */
 #currentActivity, #stopwatchCurrentActivity{
 font-size:32px;font-weight:600;color:#a3e635;text-align:center;
 }
 #countdown, #stopwatchDisplay{
-font-size:90px; /* чуть крупнее */
-text-align:center;
-font-weight:700;
-letter-spacing:5px;
-color:#a3e635;
+font-size:90px;text-align:center;font-weight:700;letter-spacing:5px;color:#a3e635;
 }
 .progress{height:10px;background:#404040;border-radius:20px;overflow:hidden;width:100%;}
 .progress-bar{height:100%;width:0%;background:#a3e635;transition:width 1s linear;}
 .activity-row{display:flex;gap:15px;flex-wrap:wrap;justify-content:center;}
 
-/* Кнопки активностей (чуть крупнее) */
 .activity-btn{
 background:#404040;color:white;padding:12px 24px;border-radius:40px;
 cursor:pointer;transition:0.2s;border:2px solid transparent;
@@ -164,42 +152,29 @@ border-color:#a3e635;
 background:#2d2d2d;
 }
 
-/* Барабаны — крупнее */
 .picker-container{
-display:flex;
-gap:60px; /* увеличил промежуток */
-justify-content:center;
-align-items:center;
+display:flex;gap:60px;justify-content:center;align-items:center;
 }
 .picker{
 display:flex;flex-direction:column;align-items:center;gap:10px;
 }
 .picker label{font-size:16px;color:#b0b0b0;text-transform:uppercase;letter-spacing:1px;}
 .picker-value{
-background:#404040;border-radius:40px;padding:20px 40px; /* увеличены */
+background:#404040;border-radius:40px;padding:20px 40px;
 font-size:48px;font-weight:700;color:#a3e635;
 cursor:ns-resize;user-select:none;transition:0.1s;
 border:2px solid transparent;
 }
 .picker-value:hover{border-color:#a3e635;}
 
-/* Добавление категории */
 .add-category{
-display:flex;
-gap:15px;
-width:100%;
-justify-content:center;
-flex-wrap:wrap;
+display:flex;gap:15px;width:100%;justify-content:center;flex-wrap:wrap;
 }
 .add-category input{
-width:250px; /* чуть шире */
-background:#404040;
-color:white;
-padding:12px 20px;
+width:250px;background:#404040;color:white;padding:12px 20px;
 }
 .add-category input::placeholder{color:#b0b0b0;}
 
-/* Статистика */
 .stats-grid{
 display:flex;flex-direction:column;gap:30px;width:100%;
 }
@@ -214,7 +189,6 @@ background:#404040;border-radius:30px;padding:30px;
 width:100%;height:300px;margin-top:15px;
 }
 
-/* Скелетоны */
 .skeleton {
     background: linear-gradient(90deg, #404040 25%, #525252 50%, #404040 75%);
     background-size: 200% 100%;
@@ -228,24 +202,13 @@ width:100%;height:300px;margin-top:15px;
 .skeleton-table td { height: 24px; background:#404040; border-radius:8px; }
 .skeleton-chart { width:100%; height:300px; background:#404040; border-radius:20px; }
 
-/* Фильтры статистики */
 .stats-filters {
-    display:flex;
-    gap:15px;
-    flex-wrap:wrap;
-    justify-content:center;
-    margin-bottom:25px;
+    display:flex;gap:15px;flex-wrap:wrap;justify-content:center;margin-bottom:25px;
 }
 .stats-filters select,
 .stats-filters input[type="date"],
 .stats-filters button {
-    background:#404040;
-    color:white;
-    padding:12px 20px;
-    border-radius:40px;
-    border:1px solid #525252;
-    font-size:15px;
-    cursor:pointer;
+    background:#404040;color:white;padding:12px 20px;border-radius:40px;border:1px solid #525252;font-size:15px;cursor:pointer;
 }
 .stats-filters select:hover,
 .stats-filters input[type="date"]:hover,
@@ -253,17 +216,12 @@ width:100%;height:300px;margin-top:15px;
     background:#525252;
 }
 .stats-filters select option {
-    background:#2d2d2d;
-    color:white;
+    background:#2d2d2d;color:white;
 }
 .date-range {
-    display:flex;
-    gap:5px;
-    align-items:center;
-    flex-wrap:wrap;
+    display:flex;gap:5px;align-items:center;flex-wrap:wrap;
 }
 
-/* Адаптация для очень широких экранов */
 @media (min-width: 1600px) {
     .container { max-width: 1600px; }
     .card { padding: 50px 80px; }
@@ -469,18 +427,57 @@ const statsContent = document.getElementById("statsContent");
 let hours = 0, minutes = 0;
 let chartInstance = null;
 
+// ---------- ЗВУК (используем встроенный base64) ----------
 let soundEnabled = true;
 const soundToggle = document.getElementById("soundToggle");
-const audio = new Audio();
-audio.src = "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3";
-audio.preload = "auto";
 
+// Короткий звуковой сигнал (Data URI) — короткий писк
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let audioAllowed = false; // флаг, разрешено ли воспроизведение
+
+// Функция разблокировки аудио при первом взаимодействии
+function enableAudio() {
+    if (!audioAllowed) {
+        audioCtx.resume().then(() => {
+            audioAllowed = true;
+            console.log("Audio unlocked");
+        });
+    }
+}
+
+// Воспроизводим короткий сигнал через Web Audio API
+function playBeep() {
+    if (!soundEnabled) return;
+    if (!audioAllowed) {
+        console.warn("Audio not yet allowed, click sound icon to enable");
+        return;
+    }
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value = 880; // нота Ля
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+    osc.start(now);
+    osc.stop(now + 0.2);
+}
+
+// Переключение иконки и разрешение звука при клике
 function toggleSound() {
     soundEnabled = !soundEnabled;
     soundToggle.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+    enableAudio(); // при любом клике пытаемся разблокировать аудио
+    if (soundEnabled) {
+        // пробный звук, чтобы убедиться, что работает
+        playBeep();
+    }
 }
+
+// Вызываем playBeep везде, где раньше был playSound
 function playSound() {
-    if (soundEnabled) audio.play().catch(e => console.log("Audio play failed", e));
+    playBeep();
 }
 
 function setActiveNav(activeId) {
@@ -811,7 +808,7 @@ function saveStopwatchSession() {
     playSound();
     renderGoalsWidget();
     renderStats();
-    alert(`Session saved: ${Math.round(finalElapsed/60000)} min ${Math.round((finalElapsed%60000)/1000)} sec`);
+    // Убрано уведомление
 }
 
 // ---------- НАВИГАЦИЯ ----------
@@ -959,6 +956,9 @@ loadActivities();
 renderStats();
 if (!restoreTimerState()) resetUI();
 setActiveNav("timerNavBtn");
+
+// При любом клике на страницу пытаемся активировать аудио (опционально)
+document.addEventListener('click', enableAudio, { once: true });
 </script>
 </body>
 </html>
